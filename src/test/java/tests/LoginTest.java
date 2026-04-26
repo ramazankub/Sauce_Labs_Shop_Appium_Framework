@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import pages.LoginPage;
 import pages.MainPage;
 import testData.Credentials;
-import testData.ErrorMessages.ErrorMessage;
 
 import java.util.stream.Stream;
 
@@ -16,7 +15,6 @@ public class LoginTest extends BaseTest{
     private final LoginPage loginPage = new LoginPage();
     private final MainPage mainPage = new MainPage();
     private final Credentials credentials = new Credentials();
-    private final ErrorMessage errorMessage = new ErrorMessage();
 
    @Test
     public void successLogin() {

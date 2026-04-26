@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+
 echo "Starting mobile test environment bootstrap..."
+
 
 # -------------------------
 # Detect Package Manager
@@ -19,6 +22,7 @@ else
  exit 1
 fi
 
+
 # -------------------------
 # Check Android SDK
 # -------------------------
@@ -27,20 +31,24 @@ echo "Checking Android SDK..."
 
 if [[ "$OSTYPE" == "darwin"* ]]
 then
-  SDK_PATH="$HOME/Library/Android/sdk"
+ SDK_PATH="$HOME/Library/Android/sdk"
 
 elif [ "$PACKAGE_MANAGER" = "apt" ]
 then
-  SDK_PATH="$HOME/Android/Sdk"
+ SDK_PATH="$HOME/Android/Sdk"
+
+ else
+  echo "ERROR: Unsupported OS for SDK path detection"
+  exit 1
 fi
 
 
 if [ -d "$SDK_PATH" ]
 then
-  echo "Android SDK found: $SDK_PATH"
+ echo "Android SDK found: $SDK_PATH"
 else
-  echo "ERROR: Android SDK not found at $SDK_PATH"
-  exit 1
+ echo "ERROR: Android SDK not found at $SDK_PATH"
+ exit 1
 fi
 
 
@@ -48,12 +56,13 @@ export ANDROID_HOME="$SDK_PATH"
 export ANDROID_SDK_ROOT="$SDK_PATH"
 export PATH="$PATH:$SDK_PATH/platform-tools:$SDK_PATH/emulator"
 
+
 if command -v adb >/dev/null
 then
-  echo "adb available"
+ echo "adb available"
 else
-  echo "ERROR: adb not found"
-  exit 1
+ echo "ERROR: adb not found"
+ exit 1
 fi
 
 
@@ -80,23 +89,32 @@ else
 
  if [ "$PACKAGE_MANAGER" = "brew" ]
  then
-   brew install node || {
-      echo "ERROR: Node installation failed"
-      exit 1
-   }
+   brew install node
 
  elif [ "$PACKAGE_MANAGER" = "apt" ]
  then
    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-
-   sudo apt-get install -y nodejs || {
-      echo "ERROR: Node installation failed"
-      exit 1
-   }
+   sudo apt-get install -y nodejs
  fi
 fi
 
 hash -r
+
+
+# -------------------------
+# Verify Node version
+# -------------------------
+
+NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+
+if [ "$NODE_VERSION" -lt 18 ]
+then
+ echo "ERROR: Node.js 18+ required. Current: $NODE_VERSION"
+ exit 1
+fi
+
+echo "Node version OK: $(node -v)"
+
 
 # -------------------------
 # Verify npm
@@ -125,18 +143,13 @@ then
 
 else
  echo "Installing Appium..."
-
- npm install -g appium || {
-    echo "ERROR: Appium installation failed"
-    exit 1
- }
+ npm install -g appium
 fi
 
 hash -r
 
 echo "Using Appium version:"
 appium -v
-
 
 
 # -------------------------
@@ -162,30 +175,30 @@ fi
 
 
 # -------------------------
-# XCUITest
+# XCUITest (macOS only)
 # -------------------------
 
 if [[ "$OSTYPE" == "darwin"* ]]
 then
 
-echo "Checking XCUITest..."
+ echo "Checking XCUITest..."
 
-OUTPUT=$(appium driver install xcuitest 2>&1)
-STATUS=$?
+ OUTPUT=$(appium driver install xcuitest 2>&1)
+ STATUS=$?
 
-if echo "$OUTPUT" | grep -q "already installed"
-then
- echo "XCUITest already installed"
+ if echo "$OUTPUT" | grep -q "already installed"
+ then
+   echo "XCUITest already installed"
 
-elif [ $STATUS -eq 0 ]
-then
- echo "XCUITest installed"
+ elif [ $STATUS -eq 0 ]
+ then
+   echo "XCUITest installed"
 
-else
- echo "$OUTPUT"
- echo "ERROR: XCUITest installation failed"
- exit 1
-fi
+ else
+   echo "$OUTPUT"
+   echo "ERROR: XCUITest installation failed"
+   exit 1
+ fi
 
 fi
 
