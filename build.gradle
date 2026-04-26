@@ -33,3 +33,13 @@ java {
 test {
     useJUnitPlatform()
 }
+tasks.register("printToolchain") {
+    doLast {
+        def launcher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(21)
+        }.get()
+
+        println "Toolchain Java Home: ${launcher.metadata.installationPath}"
+        println "Toolchain Version: ${launcher.metadata.languageVersion}"
+    }
+}
