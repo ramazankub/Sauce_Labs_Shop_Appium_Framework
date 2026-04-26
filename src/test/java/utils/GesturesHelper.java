@@ -104,23 +104,4 @@ public class GesturesHelper {
 
         driver.perform(List.of(swipe));
     }
-
-    public void scrollDownUntilElementVisible(SelenideElement selenideElement, int maxSwipes) {
-        for (int i = 0; i < maxSwipes; i++) {
-            if (selenideElement.exists() && selenideElement.isDisplayed()) {
-                return;
-            }
-            swipeUp();
-        }
-        throw new AssertionError("SelenideElement " + selenideElement + " isn`t found");
-    }
-
-    public void scrollUpUntilElementVisible(SelenideElement selenideElement, int maxSwipe) {
-        for (int i = 0; i < maxSwipe; i++) {
-            if (selenideElement.exists() && selenideElement.isDisplayed()) {
-                return;
-            }
-            swipeDown();
-        }
-    }
 }

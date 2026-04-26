@@ -9,6 +9,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$x;
 
 public class NavigationUiHelper {
+    private final GesturesHelper gesturesHelper = new GesturesHelper();
 
     public void clickOnElementById(SelenideElement selenideElement) {
         selenideElement.shouldBe(visible, Duration.ofSeconds(4));
@@ -34,5 +35,28 @@ public class NavigationUiHelper {
         SelenideElement btn = $x("//*[contains(@text, '" + textInBtn + "')]");
         btn.shouldBe(visible, Duration.ofSeconds(4));
         btn.click();
+    }
+
+    public void scrollDownUntilElementVisible(SelenideElement selenideElement, int maxSwipes) {
+        if (!selenideElement.isDisplayed()) {
+            for (int i = 0; i < maxSwipes; i++) {
+                if (selenideElement.exists() && selenideElement.isDisplayed()) {
+                    return;
+                }
+                gesturesHelper.swipeUp();
+            }
+            throw new AssertionError("SelenideElement " + selenideElement + " isn`t found");
+        }
+    }
+
+    public void scrollUpUntilElementVisible(SelenideElement selenideElement, int maxSwipe) {
+        if (!selenideElement.isDisplayed()) {
+            for (int i = 0; i < maxSwipe; i++) {
+                if (selenideElement.exists() && selenideElement.isDisplayed()) {
+                    return;
+                }
+                gesturesHelper.swipeDown();
+            }
+        }
     }
 }

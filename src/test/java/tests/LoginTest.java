@@ -6,36 +6,36 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pages.LoginPage;
 import pages.MainPage;
-import testData.AppMessages;
 import testData.Credentials;
-import utils.NavigationUiHelper;
+import testData.ErrorMessages.ErrorMessage;
 
 import java.util.stream.Stream;
 
+
 public class LoginTest extends BaseTest{
-    private LoginPage loginPage = new LoginPage();
-    private MainPage mainPage = new MainPage();
-    private NavigationUiHelper navigationUiHelper = new NavigationUiHelper();
-    private Credentials credentials = new Credentials();
-    private AppMessages appMessages = new AppMessages();
+    private final LoginPage loginPage = new LoginPage();
+    private final MainPage mainPage = new MainPage();
+    private final Credentials credentials = new Credentials();
+    private final ErrorMessage errorMessage = new ErrorMessage();
 
    @Test
     public void successLogin() {
         loginPage.login(Credentials.FIRST_USER, Credentials.CORRECT_PASSWORD);
-        navigationUiHelper.checkElementVisible(mainPage.burgerMenu);
+        mainPage.checkIsOpened();
+
     }
 
     @Test
     public void incorrectLogin() {
         loginPage.login(credentials.INCORRECT_LOGIN, credentials.INCORRECT_PASSWORD);
-        navigationUiHelper.checkTextVisible(AppMessages.INCORRECT_DATA_ERROR);
+        loginPage.showAuthError();
     }
 
     @ParameterizedTest
     @MethodSource("invalidUsers")
     void loginWithInvalidDataShowsError(String username, String password) {
         loginPage.login(username, password);
-        navigationUiHelper.checkTextVisible(AppMessages.INCORRECT_DATA_ERROR);
+        loginPage.showAuthError();
     }
 
     private static Stream<Arguments> invalidUsers() {
@@ -47,7 +47,9 @@ public class LoginTest extends BaseTest{
 
     @Test
     public void loginByPressCreds() {
-        loginPage.pasteCredentialsByPress(loginPage.credsListTitle, Credentials.FIRST_USER, Credentials.CORRECT_PASSWORD);
-        navigationUiHelper.checkElementVisible(mainPage.burgerMenu);
+        loginPage.pasteCredentialsByPress(Credentials.FIRST_USER,
+                Credentials.CORRECT_PASSWORD);
+
+        mainPage.checkIsOpened();
     }
 }
