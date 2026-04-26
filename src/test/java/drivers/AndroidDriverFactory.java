@@ -22,6 +22,8 @@ public class AndroidDriverFactory {
             UiAutomator2Options options = new UiAutomator2Options()
                     .setPlatformName(properties.getProperty("platformName"))
                     .setAutomationName(properties.getProperty("automationName"))
+                    .setAppPackage(properties.getProperty("appPackage"))
+                    .setAppActivity(properties.getProperty("appActivity"))
                     .setAutoGrantPermissions(
                             Boolean.parseBoolean(
                                     properties.getProperty("autoGrantPermissions")))
@@ -29,15 +31,15 @@ public class AndroidDriverFactory {
                             Boolean.parseBoolean(
                                     properties.getProperty("fullReset")));
 
+            // CI mode: APK downloaded by pipeline
             if (!app.isBlank()) {
-                // CI mode: APK downloaded by pipeline
                 options.setApp(app);
-            } else {
-                // Local mode: use installed app
-                options.setAppPackage(
-                        properties.getProperty("appPackage"));
-                options.setAppActivity(
-                        properties.getProperty("appActivity"));
+            }
+
+            // Handle splash screen -> main activity transition
+            String appWaitActivity = properties.getProperty("appWaitActivity", "").trim();
+            if (!appWaitActivity.isBlank()) {
+                options.setAppWaitActivity(appWaitActivity);
             }
 
             return new AndroidDriver(
