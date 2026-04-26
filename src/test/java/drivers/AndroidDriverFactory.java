@@ -27,7 +27,9 @@ public class AndroidDriverFactory {
                                         properties.getProperty("fullReset")));
 
                 if (app != null && !app.isBlank()) {
-                    options.setApp(app); // CI mode
+                    // CI mode: install apk and allow splash/startup activities
+                    options.setApp(app);
+                    options.setAppWaitActivity("*");
                 } else {
                     options.setAppPackage(properties.getProperty("appPackage"));
                     options.setAppActivity(properties.getProperty("appActivity"));
