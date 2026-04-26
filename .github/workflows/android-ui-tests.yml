@@ -85,7 +85,7 @@ jobs:
 
       - name: Inject APK path into android.properties
         run: |
-          echo "app=$(pwd)/sauce-labs.apk" >> src/test/resources/capabilities/android.properties
+          printf '\napp=%s/sauce-labs.apk\n' "$(pwd)" >> src/test/resources/capabilities/android.properties
 
       - name: Start Appium server in background
         run: appium --log appium.log &
