@@ -4,6 +4,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.Properties;
 
 
@@ -30,6 +31,8 @@ public class AndroidDriverFactory {
                     // CI mode: install apk and allow splash/startup activities
                     options.setApp(app);
                     options.setAppWaitActivity("*");
+                    options.setAppWaitDuration(Duration.ofSeconds(90));
+                    options.setAppWaitForLaunch(false);
                 } else {
                     options.setAppPackage(properties.getProperty("appPackage"));
                     options.setAppActivity(properties.getProperty("appActivity"));
