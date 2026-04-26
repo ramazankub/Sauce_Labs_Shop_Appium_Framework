@@ -90,6 +90,12 @@ jobs:
       - name: Start Appium server in background
         run: appium --log appium.log &
 
+      - name: Wait for Appium
+        run: |
+          until curl -s http://127.0.0.1:4723/status; do
+            sleep 2
+          done  
+
       - name: Run Android UI tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:

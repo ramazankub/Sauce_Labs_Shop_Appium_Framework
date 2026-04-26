@@ -14,18 +14,28 @@ public class AndroidDriverFactory {
                 properties.load(AndroidDriverFactory.class.getClassLoader().getResourceAsStream("capabilities/android.properties"));
 
 
-                UiAutomator2Options uiAutomator2Options = new UiAutomator2Options()
+                String app = properties.getProperty("app");
+
+                UiAutomator2Options options = new UiAutomator2Options()
                         .setPlatformName(properties.getProperty("platformName"))
                         .setAutomationName(properties.getProperty("automationName"))
-                        .setAppPackage(properties.getProperty("appPackage"))
-                        .setAppActivity(properties.getProperty("appActivity"))
-                        .setAutoGrantPermissions(Boolean.parseBoolean(properties.getProperty("autoGrantPermissions")))
-                        .setPlatformVersion(properties.getProperty("platformVersion"))
-                        .setFullReset(Boolean.parseBoolean(properties.getProperty("fullReset")));
+                        .setAutoGrantPermissions(
+                                Boolean.parseBoolean(
+                                        properties.getProperty("autoGrantPermissions")))
+                        .setFullReset(
+                                Boolean.parseBoolean(
+                                        properties.getProperty("fullReset")));
+
+                if (app != null && !app.isBlank()) {
+                    options.setApp(app); // CI mode
+                } else {
+                    options.setAppPackage(properties.getProperty("appPackage"));
+                    options.setAppActivity(properties.getProperty("appActivity"));
+                }
 
                 return new AndroidDriver(
                         new URL("http://127.0.0.1:4723"),
-                        uiAutomator2Options
+                        options
                 );
 
             } catch (Exception e) {
