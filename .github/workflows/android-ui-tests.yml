@@ -42,6 +42,9 @@ jobs:
   # ──────────────────────────────────────────────
   android-tests:
     name: Android UI Tests
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 45
