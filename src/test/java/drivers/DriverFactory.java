@@ -9,7 +9,7 @@ public class DriverFactory {
 
     public static AppiumDriver createDriver() {
 
-        String platform = System.getProperty("platform", "ios").toLowerCase();
+        String platform = System.getProperty("platform", "android").toLowerCase();
 
         return switch (platform) {
             case "android" -> AndroidDriverFactory.createDriver();

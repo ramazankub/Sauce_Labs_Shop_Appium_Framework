@@ -1,17 +1,44 @@
-# Android Mobile Automation Tests (Appium)
+# Mobile Automation Tests for "Sauce Labs" Demo App (Appium)
 
-This project contains automated UI tests for an Android application using **Appium**, **Java 21**, **JUnit 5**, and **Selenide Appium**.
+This project contains automated UI tests for native mobile application using **Appium**, **Java 21**, **JUnit 5**, and **Selenide Appium**.
 
 The project demonstrates a clean and scalable mobile test automation framework with proper separation of concerns and the Page Object pattern.
 
+## Quick Start
+- Clone this project
+```bash
+git clone https://github.com/ramazankub/Sauce_Labs_Shop_Appium_Framework.git
+cd Sauce_Labs_Shop_Appium_Framework
+```
+
+- Ensure Java 21 is installed
+
+Android:
+- Start an Android emulator or connect a real device
+
+```bash
+./bootstrap.sh
+appium
+./gradlew test
+```
+
+iOS:
+- Start an iOS simulator or connect a real device
+
+```bash
+./bootstrap.sh
+appium
+./gradlew test -Dplatform=ios
+```
 ---
 
 ## Tech Stack
 
 - Java **21**
 - Gradle
-- Appium **2.x**
+- Appium **3.3.1**
 - UIAutomator2
+- XCUITest
 - Android SDK
 - JUnit 5
 - Selenide Appium
@@ -23,24 +50,40 @@ The project demonstrates a clean and scalable mobile test automation framework w
 
 ```
 src/test/java
-├── drivers        # Driver factory and capabilities setup
-├── pages          # Page Objects
-├── tests          # Test classes and BaseTest
-├── utils          # UI and gesture helpers
-├── testData       # Test data and constants
+├── drivers/
+│   ├── DriverFactory.java          # Entry point: selects platform driver (android / ios)
+│   ├── AndroidDriverFactory.java   # Creates AndroidDriver with UiAutomator2Options
+│   └── IOSDriverFactory.java       # Creates IOSDriver with XCUITestOptions
+│
+├── pages/
+│   ├── LoginPage.java              # Login screen: input fields, login button, auth error
+│   └── MainPage.java               # Main screen: verifies successful login
+│
+├── tests/
+│   ├── BaseTest.java               # Driver lifecycle management (@BeforeEach / @AfterEach)
+│   └── LoginTest.java              # Test cases: positive login, negative login, parameterized
+│
+├── utils/
+│   ├── GesturesHelper.java         # Low-level gestures via W3C Actions API (swipeUp / swipeDown)
+│   └── NavigationUiHelper.java     # High-level UI actions: clicks, input, scroll to element, assertions
+│
+└── testData/
+    ├── authData/
+    │   └── Credentials.java        # Login credentials (with environment variable support)
+    └── ErrorMessages/
+        └── ErrorMessage.java       # Error message text constants
 
 src/test/resources
-├── app             # Android APK
-├── capabilities    # Appium capabilities configuration
+└── capabilities/
+    ├── android.properties          # Appium capabilities for Android (UIAutomator2)
+    └── ios.properties              # Appium capabilities for iOS (XCUITest)
 ```
 
 ---
 
 ## Application Under Test
 
-Tests are executed against an Android demo application.
-
-The APK is included in the project for simplicity and is installed automatically by Appium before test execution.
+Tests are executed against Sauce Labs demo mobile applications (Android and iOS).
 
 ---
 
@@ -51,10 +94,16 @@ Before running the tests, make sure the following tools are installed.
 ### 1. Install Java 21
 
 Download and install **Java 21 (LTS)** from the official site:
-
 https://adoptium.net/
 
-Verify installation:
+This project requires **Java 21**.  
+If another Java version is used, Gradle Toolchain auto-provisioning can automatically download the required JDK.
+
+To verify which Java version the project uses, run:
+```bash
+./gradlew printToolchain
+```
+Check your system Java:
 
 ```bash
 java -version
@@ -62,9 +111,28 @@ java -version
 
 ---
 
-### 2. Install Node.js (18+)
+### 2. Install Dependencies
 
-Download and install **Node.js LTS** from:
+You can bootstrap the full mobile test environment automatically:
+
+```bash
+chmod +x bootstrap.sh
+./bootstrap.sh
+```
+
+The bootstrap script installs and validates:
+
+- Node.js / npm
+- Appium
+- UIAutomator2 driver
+- XCUITest driver (macOS only)
+- Android SDK environment variables for the current shell session
+
+Or install dependencies manually step by step.
+
+#### Install Node.js (18+)
+
+Download and install **Node.js LTS**:
 
 https://nodejs.org/
 
@@ -77,9 +145,9 @@ npm -v
 
 ---
 
-### 3. Install Appium 2.x
+### 3. Install Appium 3.x
 
-Install Appium globally via npm:
+Install Appium globally:
 
 ```bash
 npm install -g appium
@@ -91,10 +159,16 @@ Verify installation:
 appium -v
 ```
 
-Install required Appium driver:
+Install required Appium drivers:
 
 ```bash
 appium driver install uiautomator2
+```
+
+For iOS (macOS only):
+
+```bash
+appium driver install xcuitest
 ```
 
 ---
@@ -106,10 +180,11 @@ Install **Android Studio** (includes Android SDK):
 https://developer.android.com/studio
 
 After installation:
-- Open Android Studio
+
 - Install Android SDK and Platform Tools
-- Create and start an Android Emulator  
-  **or** connect a real Android device with USB debugging enabled
+- Create and start an Android Emulator
+
+or connect a real Android device with USB debugging enabled.
 
 Verify ADB connection:
 
@@ -121,34 +196,57 @@ adb devices
 
 ## How to Run Tests
 
-1. Start Android Emulator or connect a real Android device
+### 1. Start a device
 
-2. Start Appium server:
+Use one of:
+
+- Android emulator
+- Real Android device
+- iOS simulator
+- Real iOS device
+
+---
+
+### 2. Start Appium server
 
 ```bash
 appium
 ```
 
-3. Run tests using Gradle:
+---
+
+### 3. Run tests
+
+Android (default):
 
 ```bash
 ./gradlew test
 ```
 
-4. (Optional) Generate Allure report:
+iOS:
+
+```bash
+./gradlew test -Dplatform=ios
+```
+
+---
+
+### 4. Generate Allure report (optional)
+
+Generate report:
 
 ```bash
 ./gradlew allureReport
 ```
 
-5. (Optional) Open Allure report in browser:
+Open report locally:
 
 ```bash
 ./gradlew allureServe
 ```
 
----
 
+---
 ## Test Coverage
 
 - Login (positive and negative scenarios)
@@ -163,7 +261,7 @@ appium
 
 - Page Object pattern is used to separate test logic from UI implementation
 - Test data is centralized and separated from test logic
-- No static state is used in Page Objects or test classes
+- No shared mutable state is used
 - Tests are isolated and independent
 - Parameterized tests are applied for negative scenarios
 - Capabilities are configured via properties files
@@ -175,19 +273,152 @@ appium
 
 ## Test Execution Flow
 
-1. Driver is created via `AndroidDriverFactory`
+1. Driver is created via `DriverFactory`
 2. Capabilities are loaded from `src/test/resources/capabilities`
-3. Application is installed automatically by Appium
-4. Tests are executed using JUnit 5
-5. Driver is terminated after each test
-6. Allure results are generated after execution
+3. Tests are executed using JUnit 5
+4. Driver is terminated after each test
+5. Allure results are generated after execution
 
 ---
 
 ## Environment
 
 - Java 21
-- Appium 2.x
+- Appium 3.x
 - UIAutomator2
+- XCUITest
 - Android Emulator or real Android device
+- iOS Simulator or real iOS device
 - Gradle build system
+
+---
+## CI Pipeline
+
+The project includes a GitHub Actions pipeline triggered on:
+
+- Push to `main`
+- Pull requests to `main`
+- Manual trigger (`workflow_dispatch`)
+
+The pipeline consists of two sequential jobs:
+
+**Job 1 — Build Validation:**
+- Repository checkout
+- Java 21 setup with Gradle cache
+- Project compilation (`clean build -x test`)
+
+**Job 2 — Android UI Tests** _(runs only if build passes)_:
+- KVM hardware acceleration setup for the emulator
+- Node.js, Appium 3.x and UIAutomator2 driver installation
+- Sauce Labs APK download from GitHub Releases
+- Android Emulator startup (Pixel 6, API 31) via `android-emulator-runner`
+- Full test suite execution (`./gradlew test -Dplatform=android`)
+- Upload of test result artifacts (retained 7 days)
+- Upload of Allure results (retained 7 days)
+- Appium server log upload on failure
+- Telegram notification with run status, branch, author and link
+
+Workflow definition:
+
+```text
+.github/workflows/android-ui-tests.yml
+```
+
+> **Note on iOS:**  
+> iOS simulator CI was intentionally skipped. Running XCUITest requires a `macos-latest` runner which is 10× more expensive than `ubuntu-latest` and consumes GitHub Actions minutes much faster. iOS support is fully implemented in the framework and works locally on macOS — see [How to Run Tests](#how-to-run-tests).
+
+---
+## Troubleshooting
+
+### Appium server is not running
+
+Start Appium manually:
+
+```bash
+appium
+```
+
+---
+
+### Android device or emulator is not detected
+
+Check connected devices:
+
+```bash
+adb devices
+```
+
+Make sure emulator is started or USB debugging is enabled.
+
+---
+
+### Required Appium driver is missing
+
+Install UIAutomator2:
+
+```bash
+appium driver install uiautomator2
+```
+
+Install XCUITest (macOS):
+
+```bash
+appium driver install xcuitest
+```
+
+---
+
+### Android SDK is not found
+
+Run bootstrap again:
+
+```bash
+./bootstrap.sh
+```
+
+Or verify:
+
+```bash
+adb version
+```
+
+---
+
+### Wrong Java version is used
+
+Check Gradle toolchain:
+
+```bash
+./gradlew printToolchain
+```
+
+Check system Java:
+
+```bash
+java -version
+```
+
+---
+
+### Tests fail because platform was not specified
+
+Android runs by default:
+
+```bash
+./gradlew test
+```
+
+Run iOS explicitly:
+
+```bash
+./gradlew test -Dplatform=ios
+```
+
+---
+### iOS simulator not found
+
+Check available simulators:
+
+```bash
+xcrun simctl list devices
+```
