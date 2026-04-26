@@ -1,20 +1,20 @@
 package tests;
 
 import com.codeborne.selenide.WebDriverRunner;
-import drivers.AndroidDriverFactory;
-import io.appium.java_client.android.AndroidDriver;
+import drivers.DriverFactory;
+import io.appium.java_client.AppiumDriver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 public class BaseTest {
 
-    private AndroidDriver androidDriver;
+    private AppiumDriver driver;
 
     public void openApp() {
-        androidDriver = AndroidDriverFactory.createDriver();
+        driver = DriverFactory.createDriver();
 
-        if (androidDriver != null) {
-            WebDriverRunner.setWebDriver(androidDriver);
+        if (driver != null) {
+            WebDriverRunner.setWebDriver(driver);
         }
     }
 
@@ -26,9 +26,8 @@ public class BaseTest {
     @AfterEach
     public void quit() {
 
-        if (androidDriver != null) {
-            androidDriver.quit();
-            WebDriverRunner.closeWebDriver();
+        if (driver != null) {
+            driver.quit();
         }
     }
 }
