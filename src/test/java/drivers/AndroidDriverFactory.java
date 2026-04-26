@@ -24,7 +24,7 @@ public class AndroidDriverFactory {
                         .setFullReset(Boolean.parseBoolean(properties.getProperty("fullReset")));
 
                 return new AndroidDriver(
-                        new URL(properties.getProperty("appium.url")),
+                        new URL("http://127.0.0.1:4723"),
                         uiAutomator2Options
                 );
 
