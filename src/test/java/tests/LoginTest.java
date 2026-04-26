@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pages.LoginPage;
 import pages.MainPage;
-import testData.Credentials;
+import testData.authData.Credentials;
 
 import java.util.stream.Stream;
 
@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 public class LoginTest extends BaseTest{
     private final LoginPage loginPage = new LoginPage();
     private final MainPage mainPage = new MainPage();
-    private final Credentials credentials = new Credentials();
 
    @Test
     public void successLogin() {
@@ -25,7 +24,7 @@ public class LoginTest extends BaseTest{
 
     @Test
     public void incorrectLogin() {
-        loginPage.login(credentials.INCORRECT_LOGIN, credentials.INCORRECT_PASSWORD);
+        loginPage.login(Credentials.INCORRECT_LOGIN, Credentials.INCORRECT_PASSWORD);
         loginPage.showAuthError();
     }
 

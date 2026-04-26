@@ -22,7 +22,7 @@ public class LoginPage {
     public void login(String name, String password) {
         navigationUiHelper.setDataInField(name, userNameField);
         navigationUiHelper.setDataInField(password, passwordField);
-        navigationUiHelper.clickOnElementById(loginButton);
+        navigationUiHelper.clickOnElement(loginButton);
 
     }
 
@@ -30,7 +30,7 @@ public class LoginPage {
         navigationUiHelper.scrollDownUntilElementVisible(credentialsList, 4);
         navigationUiHelper.clickOnBtnByText(login);
         navigationUiHelper.scrollUpUntilElementVisible(loginButton,4);
-        navigationUiHelper.clickOnElementById(loginButton);
+        navigationUiHelper.clickOnElement(loginButton);
     }
 
     public void showAuthError() {

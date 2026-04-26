@@ -2,7 +2,6 @@ package utils;
 
 import com.codeborne.selenide.SelenideElement;
 
-import java.awt.*;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.visible;
@@ -11,7 +10,7 @@ import static com.codeborne.selenide.Selenide.$x;
 public class NavigationUiHelper {
     private final GesturesHelper gesturesHelper = new GesturesHelper();
 
-    public void clickOnElementById(SelenideElement selenideElement) {
+    public void clickOnElement(SelenideElement selenideElement) {
         selenideElement.shouldBe(visible, Duration.ofSeconds(4));
         selenideElement.click();
     }
@@ -57,6 +56,7 @@ public class NavigationUiHelper {
                 }
                 gesturesHelper.swipeDown();
             }
+            throw new AssertionError("SelenideElement " + selenideElement + " isn`t found");
         }
     }
 }
