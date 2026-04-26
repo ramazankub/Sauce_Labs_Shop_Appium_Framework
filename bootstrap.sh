@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Starting mobile test environment bootstrap..."
+
 # -------------------------
 # Detect Package Manager
 # -------------------------
@@ -17,12 +19,55 @@ else
  exit 1
 fi
 
+# -------------------------
+# Check Android SDK
+# -------------------------
+
+echo "Checking Android SDK..."
+
+if [[ "$OSTYPE" == "darwin"* ]]
+then
+  SDK_PATH="$HOME/Library/Android/sdk"
+
+elif [ "$PACKAGE_MANAGER" = "apt" ]
+then
+  SDK_PATH="$HOME/Android/Sdk"
+fi
+
+
+if [ -d "$SDK_PATH" ]
+then
+  echo "Android SDK found: $SDK_PATH"
+else
+  echo "ERROR: Android SDK not found at $SDK_PATH"
+  exit 1
+fi
+
+
+export ANDROID_HOME="$SDK_PATH"
+export ANDROID_SDK_ROOT="$SDK_PATH"
+export PATH="$PATH:$SDK_PATH/platform-tools:$SDK_PATH/emulator"
+
+if command -v adb >/dev/null
+then
+  echo "adb available"
+else
+  echo "ERROR: adb not found"
+  exit 1
+fi
+
+
+echo "ANDROID_HOME configured for current session"
+
+echo "Tip: add these variables to your shell profile for persistence:"
+echo "export ANDROID_HOME=$SDK_PATH"
+echo 'export ANDROID_SDK_ROOT=$ANDROID_HOME'
+echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator'
+
 
 # -------------------------
 # Install Node if missing
 # -------------------------
-
-echo "Starting mobile test environment bootstrap..."
 
 echo "Checking Node.js..."
 
