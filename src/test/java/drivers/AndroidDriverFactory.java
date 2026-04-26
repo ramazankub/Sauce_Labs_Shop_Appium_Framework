@@ -30,9 +30,9 @@ public class AndroidDriverFactory {
                 if (app != null && !app.isBlank()) {
                     // CI mode: install apk and allow splash/startup activities
                     options.setApp(app);
-                    options.setAppWaitActivity("*");
+                    options.setAppActivity("com.swaglabsmobileapp.SplashActivity");
+                    options.setAppWaitActivity("com.swaglabsmobileapp.*");
                     options.setAppWaitDuration(Duration.ofSeconds(90));
-                    options.setAppWaitForLaunch(false);
                 } else {
                     options.setAppPackage(properties.getProperty("appPackage"));
                     options.setAppActivity(properties.getProperty("appActivity"));
