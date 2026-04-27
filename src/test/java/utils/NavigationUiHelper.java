@@ -9,54 +9,51 @@ import static com.codeborne.selenide.Selenide.$x;
 
 public class NavigationUiHelper {
     private final GesturesHelper gesturesHelper = new GesturesHelper();
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(4);
 
     public void clickOnElement(SelenideElement selenideElement) {
-        selenideElement.shouldBe(visible, Duration.ofSeconds(4));
+        selenideElement.shouldBe(visible, DEFAULT_TIMEOUT);
         selenideElement.click();
     }
 
     public void setDataInField(String data, SelenideElement selenideElement) {
-        selenideElement.shouldBe(visible, Duration.ofSeconds(4));
+        selenideElement.shouldBe(visible, DEFAULT_TIMEOUT);
         selenideElement.click();
         selenideElement.setValue(data);
     }
 
     public void checkTextVisible(String text) {
         $x("//*[contains(@text, \"" + text + "\")]")
-                .shouldBe(visible, Duration.ofSeconds(3));
+                .shouldBe(visible, DEFAULT_TIMEOUT);
     }
 
     public void checkElementVisible(SelenideElement selenideElement) {
-        selenideElement.shouldBe(visible, Duration.ofSeconds(4));
+        selenideElement.shouldBe(visible, DEFAULT_TIMEOUT);
     }
 
     public void clickOnBtnByText(String textInBtn) {
         SelenideElement btn = $x("//*[contains(@text, '" + textInBtn + "')]");
-        btn.shouldBe(visible, Duration.ofSeconds(4));
+        btn.shouldBe(visible, DEFAULT_TIMEOUT);
         btn.click();
     }
 
-    public void scrollDownUntilElementVisible(SelenideElement selenideElement, int maxSwipes) {
-        if (!selenideElement.isDisplayed()) {
-            for (int i = 0; i < maxSwipes; i++) {
-                if (selenideElement.exists() && selenideElement.isDisplayed()) {
-                    return;
-                }
-                gesturesHelper.swipeUp();
-            }
-            throw new AssertionError("SelenideElement " + selenideElement + " isn`t found");
+    public void scrollDownUntilElementVisible(SelenideElement element, int maxSwipes) {
+        for (int i = 0; i < maxSwipes; i++) {
+            if (element.exists() && element.isDisplayed()) return;
+            gesturesHelper.swipeUp();
+        }
+        if (!element.exists() || !element.isDisplayed()) {
+            throw new AssertionError("Element not found after " + maxSwipes + " swipes down: " + element);
         }
     }
 
-    public void scrollUpUntilElementVisible(SelenideElement selenideElement, int maxSwipe) {
-        if (!selenideElement.isDisplayed()) {
-            for (int i = 0; i < maxSwipe; i++) {
-                if (selenideElement.exists() && selenideElement.isDisplayed()) {
-                    return;
-                }
-                gesturesHelper.swipeDown();
-            }
-            throw new AssertionError("SelenideElement " + selenideElement + " isn`t found");
+    public void scrollUpUntilElementVisible(SelenideElement element, int maxSwipes) {
+        for (int i = 0; i < maxSwipes; i++) {
+            if (element.exists() && element.isDisplayed()) return;
+            gesturesHelper.swipeDown();
+        }
+        if (!element.exists() || !element.isDisplayed()) {
+            throw new AssertionError("Element not found after " + maxSwipes + " swipes up: " + element);
         }
     }
 }

@@ -4,53 +4,32 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 
 import java.net.URL;
-import java.time.Duration;
 import java.util.Properties;
 
+
 public class AndroidDriverFactory {
+        public static AndroidDriver createDriver() {
+            try {
+                Properties properties = new Properties();
+                properties.load(AndroidDriverFactory.class.getClassLoader().getResourceAsStream("capabilities/android.properties"));
 
-    public static AndroidDriver createDriver() {
-        try {
-            Properties properties = new Properties();
-            properties.load(
-                    AndroidDriverFactory.class
-                            .getClassLoader()
-                            .getResourceAsStream("capabilities/android.properties")
-            );
 
-            String app = properties.getProperty("app", "").trim();
+                UiAutomator2Options uiAutomator2Options = new UiAutomator2Options()
+                        .setPlatformName(properties.getProperty("platformName"))
+                        .setAutomationName(properties.getProperty("automationName"))
+                        .setAppPackage(properties.getProperty("appPackage"))
+                        .setAppActivity(properties.getProperty("appActivity"))
+                        .setAutoGrantPermissions(Boolean.parseBoolean(properties.getProperty("autoGrantPermissions")))
+                        .setPlatformVersion(properties.getProperty("platformVersion"))
+                        .setFullReset(Boolean.parseBoolean(properties.getProperty("fullReset")));
 
-            UiAutomator2Options options = new UiAutomator2Options()
-                    .setPlatformName(properties.getProperty("platformName"))
-                    .setAutomationName(properties.getProperty("automationName"))
-                    .setAutoGrantPermissions(
-                            Boolean.parseBoolean(
-                                    properties.getProperty("autoGrantPermissions")))
-                    .setFullReset(
-                            Boolean.parseBoolean(
-                                    properties.getProperty("fullReset")));
+                return new AndroidDriver(
+                        new URL(properties.getProperty("appium.url")),
+                        uiAutomator2Options
+                );
 
-            // CI mode: APK downloaded by pipeline
-            if (!app.isBlank()) {
-                options.setApp(app);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-
-            // Handle splash screen -> main activity transition
-            String appWaitActivity = properties.getProperty("appWaitActivity", "").trim();
-            if (!appWaitActivity.isBlank()) {
-                options.setAppWaitActivity(appWaitActivity);
-            }
-
-            String newCommandTimeout = properties.getProperty("newCommandTimeout", "120").trim();
-            options.setNewCommandTimeout(Duration.ofSeconds(Long.parseLong(newCommandTimeout)));
-
-            return new AndroidDriver(
-                    new URL(properties.getProperty("appium.url")),
-                    options
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create Android driver", e);
         }
-    }
 }
