@@ -297,31 +297,22 @@ Open report locally:
 The project includes a GitHub Actions pipeline triggered on:
 
 - Push to `main`
-- Pull requests to `main`
 - Manual trigger (`workflow_dispatch`)
 
-The pipeline consists of two sequential jobs:
-
-**Job 1 — Build Validation:**
-- Repository checkout
-- Java 21 setup with Gradle cache
-- Project compilation (`clean build -x test`)
-
-**Job 2 — Android UI Tests** _(runs only if build passes)_:
+The pipeline consists of a single job — **Android UI Tests**:
 - KVM hardware acceleration setup for the emulator
 - Node.js, Appium 3.x and UIAutomator2 driver installation
 - Sauce Labs APK download from GitHub Releases
-- Android Emulator startup (Pixel 6, API 31) via `android-emulator-runner`
-- Full test suite execution (`./gradlew test -Dplatform=android`)
-- Upload of test result artifacts (retained 7 days)
-- Upload of Allure results (retained 7 days)
-- Appium server log upload on failure
-- Telegram notification with run status, branch, author and link
+- Appium server startup in background
+- Android Emulator startup (Pixel 5, API 31) via `android-emulator-runner`
+- Full test suite execution (`./gradlew test`)
+- Upload of test result artifacts (Allure results, reports, Appium log)
+- Telegram notification with run status, branch and link
 
 Workflow definition:
 
 ```text
-.github/workflows/android-ui-tests.yml
+.github/workflows/sauceLabs-ui-tests.yml
 ```
 
 > **Note on iOS:**  
