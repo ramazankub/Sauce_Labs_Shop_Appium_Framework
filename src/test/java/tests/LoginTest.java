@@ -19,7 +19,6 @@ public class LoginTest extends BaseTest{
     public void successLogin() {
         loginPage.login(Credentials.FIRST_USER, Credentials.CORRECT_PASSWORD);
         mainPage.checkIsOpened();
-
     }
 
     @Test

@@ -22,8 +22,6 @@ public class AndroidDriverFactory {
             UiAutomator2Options options = new UiAutomator2Options()
                     .setPlatformName(properties.getProperty("platformName"))
                     .setAutomationName(properties.getProperty("automationName"))
-                    .setAppPackage(properties.getProperty("appPackage"))
-                    .setAppActivity(properties.getProperty("appActivity"))
                     .setAutoGrantPermissions(
                             Boolean.parseBoolean(
                                     properties.getProperty("autoGrantPermissions")))

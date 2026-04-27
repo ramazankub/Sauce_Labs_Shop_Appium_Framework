@@ -23,7 +23,6 @@ public class LoginPage {
         navigationUiHelper.setDataInField(name, userNameField);
         navigationUiHelper.setDataInField(password, passwordField);
         navigationUiHelper.clickOnElement(loginButton);
-
     }
 
     public void pasteCredentialsByPress(String login, String password) {

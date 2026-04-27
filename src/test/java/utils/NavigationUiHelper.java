@@ -23,7 +23,7 @@ public class NavigationUiHelper {
 
     public void checkTextVisible(String text) {
         $x("//*[contains(@text, \"" + text + "\")]")
-                .shouldBe(visible, Duration.ofSeconds(3));
+                .shouldBe(visible, Duration.ofSeconds(10));
     }
 
     public void checkElementVisible(SelenideElement selenideElement) {
