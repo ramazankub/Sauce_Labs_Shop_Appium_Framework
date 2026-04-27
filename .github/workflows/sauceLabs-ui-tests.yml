@@ -23,15 +23,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Enable KVM for hardware acceleration
+      - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - run: chmod +x gradlew
-
-      - name: Install Appium & uiautomator2 driver
+      - name: Install Appium & uiautomator2
         run: |
           npm install -g appium
           appium driver install uiautomator2
@@ -46,43 +44,18 @@ jobs:
         run: |
           printf '\napp=%s/sauce-labs.apk\n' "$(pwd)" >> src/test/resources/capabilities/android.properties
 
+      - name: Start Appium server
+        run: appium --log appium.log --log-timestamp &
+
       - name: Run tests inside emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
           arch: x86_64
           profile: pixel_5
-          avd-name: test_avd
-          force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: |
-            # Wait for emulator to be fully booted
-            adb wait-for-device
-            adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 2; done'
-            echo "Emulator booted"
-
-            # Start Appium in background
-            appium --log appium.log --log-timestamp &
-            APPIUM_PID=$!
-            echo "Appium PID: $APPIUM_PID"
-
-            # Wait until Appium is ready
-            echo "Waiting for Appium to start..."
-            for i in $(seq 1 30); do
-              if curl -s http://127.0.0.1:4723/status | grep -q '"ready"'; then
-                echo "Appium is ready after ${i}s"
-                break
-              fi
-              sleep 1
-            done
-
-            # Run tests
-            ./gradlew test
-            TEST_EXIT=$?
-
-            kill $APPIUM_PID 2>/dev/null || true
-            exit $TEST_EXIT
+          script: ./gradlew test
 
       - name: Upload artifacts
         if: always()
@@ -99,13 +72,7 @@ jobs:
         if: always()
         run: |
           STATUS="${{ job.status }}"
-
-          if [ "$STATUS" = "success" ]; then
-            ICON="✅"
-          else
-            ICON="❌"
-          fi
-
+          ICON=$([[ "$STATUS" == "success" ]] && echo "✅" || echo "❌")
           MESSAGE="${ICON} Android UI Tests
 Repo: ${{ github.repository }}
 Branch: ${{ github.ref_name }}
