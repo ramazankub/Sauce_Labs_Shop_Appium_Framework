@@ -14,7 +14,6 @@ for i in $(seq 1 30); do
     READY=true
     break
   fi
-
   sleep 1
 done
 
