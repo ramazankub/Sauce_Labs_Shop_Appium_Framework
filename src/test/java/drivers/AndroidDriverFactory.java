@@ -4,6 +4,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.Properties;
 
 public class AndroidDriverFactory {
@@ -39,6 +40,9 @@ public class AndroidDriverFactory {
             if (!appWaitActivity.isBlank()) {
                 options.setAppWaitActivity(appWaitActivity);
             }
+
+            String newCommandTimeout = properties.getProperty("newCommandTimeout", "120").trim();
+            options.setNewCommandTimeout(Duration.ofSeconds(Long.parseLong(newCommandTimeout)));
 
             return new AndroidDriver(
                     new URL(properties.getProperty("appium.url")),
