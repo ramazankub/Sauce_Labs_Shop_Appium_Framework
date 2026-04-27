@@ -44,9 +44,6 @@ jobs:
         run: |
           printf '\napp=%s/sauce-labs.apk\n' "$(pwd)" >> src/test/resources/capabilities/android.properties
 
-      - name: Start Appium server
-        run: appium --log appium.log --log-timestamp &
-
       - name: Run tests inside emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -55,7 +52,16 @@ jobs:
           profile: pixel_5
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew test
+          script: |
+            appium --log appium.log --log-timestamp &
+
+            echo "Waiting for Appium..."
+            for i in $(seq 1 30); do
+              curl -s http://127.0.0.1:4723/status | grep -q '"ready":true' && echo "Appium ready" && break
+              sleep 1
+            done
+
+            ./gradlew test
 
       - name: Upload artifacts
         if: always()
