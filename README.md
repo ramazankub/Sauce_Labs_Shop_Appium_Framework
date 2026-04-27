@@ -297,17 +297,15 @@ Open report locally:
 The project includes a GitHub Actions pipeline triggered on:
 
 - Push to `main`
+- Pull request
 - Manual trigger (`workflow_dispatch`)
 
-The pipeline consists of a single job — **Android UI Tests**:
-- KVM hardware acceleration setup for the emulator
-- Node.js, Appium 3.x and UIAutomator2 driver installation
-- Sauce Labs APK download from GitHub Releases
-- Appium server startup in background
-- Android Emulator startup (Pixel 5, API 31) via `android-emulator-runner`
-- Full test suite execution (`./gradlew test`)
-- Upload of test result artifacts (Allure results, reports, Appium log)
-- Telegram notification with run status, branch and link
+The pipeline consists of a single job — **Build Verification**:
+- Checkout of the repository
+- Java 21 (Temurin) setup with Gradle cache
+- Framework compilation and test classes build (`./gradlew clean assemble testClasses`)
+- Upload of build reports and test-result artifacts
+- Telegram notification with run status
 
 Workflow definition:
 
@@ -315,8 +313,10 @@ Workflow definition:
 .github/workflows/sauceLabs-ui-tests.yml
 ```
 
-> **Note on iOS:**  
-> iOS simulator CI was intentionally skipped. Running XCUITest requires a `macos-latest` runner which is 10× more expensive than `ubuntu-latest` and consumes GitHub Actions minutes much faster. iOS support is fully implemented in the framework and works locally on macOS — see [How to Run Tests](#how-to-run-tests).
+> **Note on running tests in CI:**  
+> Full end-to-end tests (Android emulator + Appium) are not executed in CI because they require KVM acceleration, a running Appium server, and a Sauce Labs APK — resources not available on a standard `ubuntu-latest` runner without significant setup overhead.  
+> The CI job validates that the framework compiles correctly and all test classes are buildable.  
+> iOS CI is also intentionally skipped: XCUITest requires a `macos-latest` runner which is 10× more expensive. Both platforms are fully supported and tested locally — see [How to Run Tests](#how-to-run-tests).
 
 ---
 ## Troubleshooting
